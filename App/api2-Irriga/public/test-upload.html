@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Upload de Dados de Irrigação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Upload de Dados de Irrigação</h1>
+    <form id="uploadForm">
+        <div class="form-group">
+            <label for="zoneId">Zona de Irrigação:</label>
+            <input type="text" id="zoneId" name="zoneId" required placeholder="ID da Zona de Irrigação">
+        </div>
+
+        <div class="form-group">
+            <label for="eventDate">Data do Evento:</label>
+            <input type="datetime-local" id="eventDate" name="eventDate" required>
+        </div>
+
+        <div class="form-group">
+            <label for="volume">Volume de Água (litros):</label>
+            <input type="number" id="volume" name="volume" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="sensorId">ID do Sensor (opcional):</label>
+            <input type="text" id="sensorId" name="sensorId" placeholder="ID do Sensor">
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Observações:</label>
+            <textarea id="notes" name="notes"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="file">Arquivo de Log (opcional):</label>
+            <input type="file" id="file" name="file" accept=".csv,.txt,.pdf">
+        </div>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('zoneId', document.getElementById('zoneId').value);
+            formData.append('eventDate', document.getElementById('eventDate').value);
+            formData.append('volume', document.getElementById('volume').value);
+            formData.append('sensorId', document.getElementById('sensorId').value);
+            formData.append('notes', document.getElementById('notes').value);
+            if (document.getElementById('file').files.length > 0) {
+                formData.append('file', document.getElementById('file').files[0]);
+            }
+
+            try {
+                const response = await fetch('/api/irrigation-events', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById('response').textContent = 
+                    JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('response').textContent = 
+                    'Erro: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

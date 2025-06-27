@@ -1,0 +1,58 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api-java
+      - api-node
+      - frontend
+
+  api-java:
+    build: ./Irriga/apispring
+    container_name: api-java
+    ports:
+    - "8081:8080"
+    environment:
+      SPRING_APPLICATION_NAME: apispring
+      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui
+      SPRINGDOC_API_DOCS_PATH: /v3/api-docs
+      SPRING_DATASOURCE_URL: jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:6543/postgres
+      SPRING_DATASOURCE_USERNAME: postgres.rhngmzoacujunrekwcnc
+      SPRING_DATASOURCE_PASSWORD: utfpr123456amandus
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_SQL_INIT_MODE: always
+      SPRING_SQL_INIT_PLATFORM: postgresql
+      SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_LOB_NON_CONTEXTUAL_CREATION: "true"
+      SPRING_JPA_OPEN_IN_VIEW: "false"
+      JWT_SECRET: fsdfs#5345ggd*465sdf*gs*df
+      JWT_EXPIRES: "3600"
+      AWS_COGNITO_REGION: us-east-2
+      AWS_COGNITO_URL: https://cognito-idp.us-east-2.amazonaws.com
+      AWS_COGNITO_USERPOOLID: us-east-2_GoP3BTQmp
+      AWS_COGNITO_CLIENTID: 615jagf2ag37dt59athbg6r3ut
+
+  api-node:
+    build: ./api2-Irriga
+    container_name: api-node
+    ports:
+      - "3001:3000"
+    environment:
+      MONGO_URL: mongodb+srv://arthurnunes:WSJsf3p7fAESkaWk@cluster0.nmpwdiq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-java
+      - api-node
+
+volumes:
+  mongo_data:
+  pg_data:
