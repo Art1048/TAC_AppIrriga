@@ -52,6 +52,9 @@ services:
     depends_on:
       - api-java
       - api-node
+    environment:
+      - REACT_APP_API_JAVA_URL=http://api-java:8080
+      - REACT_APP_API_NODE_URL=http://api-node:3000
 
 volumes:
   mongo_data:
