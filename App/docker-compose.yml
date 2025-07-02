@@ -4,7 +4,7 @@ services:
     ports:
       - "8081:80"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx:/etc/nginx/conf.d
     depends_on:
       - api-java
       - api-node
