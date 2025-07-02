@@ -1,16 +1,26 @@
 pipeline {
-    agent any // Roda em qualquer agente disponível
+    // Define que o agente para este pipeline será um contêiner Docker
+    agent {
+        docker {
+            image 'docker/compose:1.29.2' // Imagem oficial que contém docker-compose
+            // Argumento crucial para permitir que este contêiner controle outros contêineres
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     stages {
-        stage('Build and Run Docker Compose in App folder') {
+        stage('Run Docker Compose Application') {
             steps {
-                // Correção: O nome do diretório é 'App', com 'A' maiúsculo
+                // Como o agente já é o container com as ferramentas,
+                // e o Jenkins já fez o checkout do código, podemos ir direto ao ponto.
+                
+                // Entramos na pasta 'App' onde está o seu docker-compose.yml
                 dir('App') {
                     script {
                         try {
-                            echo "Running docker-compose commands inside the 'App' directory..."
+                            echo "Running docker-compose commands from inside a docker/compose container..."
                             
-                            // Agora os comandos serão executados dentro da pasta correta
+                            // Os comandos agora funcionarão, pois o agente tem o 'docker-compose'
                             sh 'docker-compose down --remove-orphans'
                             sh 'docker-compose up --build -d'
                             
