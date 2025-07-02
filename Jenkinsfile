@@ -2,18 +2,22 @@ pipeline {
     agent any // Roda em qualquer agente disponível
 
     stages {
-        stage('Build and Run Docker Compose') {
+        stage('Build and Run Docker Compose in App folder') {
             steps {
-                // Muda o diretório de trabalho para a pasta 'app'
-                dir('app') {
+                // Correção: O nome do diretório é 'App', com 'A' maiúsculo
+                dir('App') {
                     script {
                         try {
-                            // Agora os comandos serão executados dentro da pasta 'app'
+                            echo "Running docker-compose commands inside the 'App' directory..."
+                            
+                            // Agora os comandos serão executados dentro da pasta correta
                             sh 'docker-compose down --remove-orphans'
                             sh 'docker-compose up --build -d'
+                            
+                            echo "Docker Compose services started successfully."
                         } catch (e) {
                             sh 'docker-compose down --remove-orphans'
-                            error "Falha ao executar o Docker Compose: ${e}"
+                            error "Failed to run Docker Compose: ${e}"
                         }
                     }
                 }
@@ -23,7 +27,7 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finalizado.'
+            echo 'Pipeline finished.'
         }
     }
 }
