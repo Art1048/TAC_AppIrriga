@@ -1,22 +1,20 @@
 pipeline {
-    agent any // Define que o pipeline pode rodar em qualquer agente
+    agent any // Roda em qualquer agente disponível
 
     stages {
         stage('Build and Run Docker Compose') {
             steps {
-                script {
-                    try {
-                        // O código já está disponível aqui pelo checkout automático do Jenkins
-                        
-                        // Para e remove contêineres de execuções anteriores
-                        sh 'docker-compose down --remove-orphans'
-
-                        // Constrói as imagens e sobe os contêineres
-                        sh 'docker-compose up --build -d'
-                    } catch (e) {
-                        // Em caso de falha, garante que os contêineres sejam parados
-                        sh 'docker-compose down --remove-orphans'
-                        error "Falha ao executar o Docker Compose: ${e}"
+                // Muda o diretório de trabalho para a pasta 'app'
+                dir('app') {
+                    script {
+                        try {
+                            // Agora os comandos serão executados dentro da pasta 'app'
+                            sh 'docker-compose down --remove-orphans'
+                            sh 'docker-compose up --build -d'
+                        } catch (e) {
+                            sh 'docker-compose down --remove-orphans'
+                            error "Falha ao executar o Docker Compose: ${e}"
+                        }
                     }
                 }
             }
